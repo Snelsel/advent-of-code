@@ -9,15 +9,11 @@ def read():
 
     with open('input') as input:
         for line in input: 
-            parts = re.split(':? ', line.strip())
-        
-            occ = re.split('\-', parts[0])
-            char = parts[1]
-            password = parts[2]
-
+            (lower, upper, char, password) = re.findall('(\d+)-(\d+) ([a-z]): ([a-z]+)', line)[0]
+            
             password_policy = PasswordPolicy(
-                int(occ[0]),
-                int(occ[1]),
+                int(lower),
+                int(upper),
                 char
             )
 
