@@ -1,24 +1,11 @@
+from collections import namedtuple
 import re
 
-validPasswords = 0
-
-class PasswordPolicy:
-    def __init__(self, lower, upper, char):
-        self.lower = lower
-        self.upper = upper
-        self.char = char
-    
-    def get_char(self):
-        return self.char
-    
-    def get_lower(self):
-        return self.lower
-    
-    def get_upper(self):
-        return self.upper
+PasswordPolicy = namedtuple('PasswordPolicy', 'lower upper char')
+PasswordWithPolicy = namedtuple('PasswordWithPolicy', 'password password_policy')
 
 def read():
-    input_list = []
+    passwords_with_policies = []
 
     with open('input') as input:
         for line in input: 
@@ -28,34 +15,37 @@ def read():
             char = parts[1]
             password = parts[2]
 
-            passwordPolicy = PasswordPolicy(
+            password_policy = PasswordPolicy(
                 int(occ[0]),
                 int(occ[1]),
                 char
             )
 
-            input_list.append(
-                [password, passwordPolicy]
+            passwords_with_policies.append(
+                PasswordWithPolicy(
+                    password,
+                    password_policy
+                )
             )
     
-    return input_list
+    return passwords_with_policies
 
-def process(input_list, is_valid_password):
+def process(passwords_with_policies, is_valid_password):
     valid_passwords = 0
 
-    for parsed_line in input_list:
-        if is_valid_password(parsed_line[0], parsed_line[1]):
+    for password_with_policy in passwords_with_policies:
+        if is_valid_password(password_with_policy.password, password_with_policy.password_policy):
             valid_passwords += 1
     
     return valid_passwords
 
-def is_valid_password_part1(password, passwordPolicy):
-    matches = re.findall(passwordPolicy.get_char(), password)
+def is_valid_password_part1(password, password_policy):
+    matches = re.findall(password_policy.char, password)
 
-    return len(matches) >= passwordPolicy.get_lower() and len(matches) <= passwordPolicy.get_upper()
+    return len(matches) >= password_policy.lower and len(matches) <= password_policy.upper
 
-def is_valid_password_part2(password, passwordPolicy):
-    return (password[passwordPolicy.get_lower() - 1] == passwordPolicy.get_char()) ^ (password[passwordPolicy.get_upper() -1] == passwordPolicy.get_char())
+def is_valid_password_part2(password, password_policy):
+    return (password[password_policy.lower - 1] == password_policy.char) ^ (password[password_policy.upper -1] == password_policy.char)
 
 def main(is_valid_password):
     input_list = read()
