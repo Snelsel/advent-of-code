@@ -40,20 +40,27 @@ def read():
     
     return input_list
 
-def process(input_list):
+def process(input_list, is_valid_password):
     valid_passwords = 0
 
     for parsed_line in input_list:
-        matches = re.findall(parsed_line[1].get_char(), parsed_line[0])
-
-        if len(matches) >= parsed_line[1].get_lower() and len(matches) <= parsed_line[1].get_upper():
+        if is_valid_password(parsed_line[0], parsed_line[1]):
             valid_passwords += 1
     
     return valid_passwords
 
-def main():
+def is_valid_password_part1(password, passwordPolicy):
+    matches = re.findall(passwordPolicy.get_char(), password)
+
+    return len(matches) >= passwordPolicy.get_lower() and len(matches) <= passwordPolicy.get_upper()
+
+def is_valid_password_part2(password, passwordPolicy):
+    return (password[passwordPolicy.get_lower() - 1] == passwordPolicy.get_char()) ^ (password[passwordPolicy.get_upper() -1] == passwordPolicy.get_char())
+
+def main(is_valid_password):
     input_list = read()
-    return process(input_list)
+    return process(input_list, is_valid_password)
 
 if __name__ == '__main__':
-    print(f'Part 1: {main()}')
+    print(f'Part 1: {main(is_valid_password_part1)}')
+    print(f'Part 2: {main(is_valid_password_part2)}')
