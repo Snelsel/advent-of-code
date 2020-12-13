@@ -1,4 +1,4 @@
-from operator import itemgetter
+from datetime import datetime
 
 class Bus:
     def __init__(self, k, m):
@@ -12,25 +12,13 @@ class Bus:
         x = 0
         matches = []
         while True:
-            # if x > 1000000000:
-            #     raise Exception('Possible infinite loop detected')
-            
             t = self.k * x + self.m
-
-            # if not self.is_valid(t):
-            #     raise Exception('Dont try a t thats not valid for yourself...')
 
             if other.is_valid(t):
                 matches.append(t)
 
-                if len(matches) > 2:
-                    k = matches[1] - matches[0]
-                    m = matches[0]
-                    bus = Bus(k, m)
-                    # for match in matches:
-                    #     if not bus.is_valid(t):
-                    #         print(matches, bus)
-                    #         raise Exception('Failed merge!')
+                if len(matches) > 1:
+                    bus = Bus(matches[1] - matches[0], matches[0])
                     return bus
             
             x += 1
@@ -51,13 +39,18 @@ def parse(input):
 def process(buses):
     i = 1
     new_bus = None
-    print(len(buses) - 1)
     while i <= (len(buses) - 1):
         old_bus = buses[i-1] if new_bus is None else new_bus
         new_bus = old_bus.merge(buses[i])
-        print(i, new_bus)
+        print(datetime.now().strftime("%H:%M:%S"), i, new_bus)
         i += 1
     return new_bus.first_t()
+
+print('Performing sanity check with known data to start with...')
+if process(parse('1789,37,47,1889')) != 1202161486:
+    raise Exception('Precondition failed!')
+print('')
+print('Sanity check done. Starting the real crunch now.')
 
 buses = parse('23,x,x,x,x,x,x,x,x,x,x,x,x,41,x,x,x,x,x,x,x,x,x,733,x,x,x,x,x,x,x,x,x,x,x,x,13,17,x,x,x,x,19,x,x,x,x,x,x,x,x,x,29,x,449,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,37')
 print(process(buses))
