@@ -1,0 +1,60 @@
+from operator import itemgetter
+
+
+def parse(input):
+    buses = []
+    for i, c in enumerate(input.split(',')):
+        if c != 'x':
+            buses.append((i, int(c)))
+    return buses
+
+
+def multiply(input):
+    klist = [x[1] for x in input]
+    mp = 1.0
+    for i in klist:
+        mp = mp * i
+        print(mp)
+    return mp
+
+
+def process(buses):
+    sorted_buses = sorted(buses, key=itemgetter(1), reverse=True)
+
+    bus_with_highest_k = sorted_buses[0]
+
+    offset = bus_with_highest_k[0]
+
+    k = bus_with_highest_k[1]
+
+    print("highest k is: ", k)
+
+    period = multiply(sorted_buses) / k
+
+    print("System period is the product of all k:s divided by any node: ", period * k, "/ i.e highest k = ", period)
+
+    i = 0
+
+    while True:
+
+        if i > 100000000000:
+            raise Exception('Infinite loop')
+
+        t = i * period - offset
+
+        if valid(t, sorted_buses):
+            return t
+        i += 1
+
+
+def valid(a, buses):
+    for bus in buses:
+        if (a + bus[0]) % bus[1] != 0:
+            return False
+    return True
+
+
+buses = parse(
+    '23,x,x,x,x,x,x,x,x,x,x,x,x,41,x,x,x,x,x,x,x,x,x,733,x,x,x,x,x,x,x,x,x,x,x,x,13,17,x,x,x,x,19,x,x,x,x,x,x,x,x,x,29,x,449,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,x,37')
+print(buses)
+print("Happens at: ", process(buses))
